@@ -20,18 +20,33 @@ module.exports.createCard = (req, res) => {
     name, link, owner: req.user._id,
   })
     .then((newCard) => res.send({ data: newCard }))
-    .catch((err) => res.status(400).send(err.message));
+    .catch((err) => {
+      if (err.name === 'ValidationError') return res.status(400).send({ message: err.message });
+      return res.status(500).send({ message: err.message });
+    });
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findOneAndRemove({ _id: req.params.id, owner: req.user._id })
-    .then((found) => {
-      if (!found) {
-        return res.status(403).send({ message: 'Карточка не найдена, либо нет доступа к удалению карточки' });
+  Card.findById(req.params.id)
+    .then((card) => {
+      if (!card) {
+        return res.status(404).send({ message: 'Карточка не найдена' });
       }
-      return res.send(found);
+      return Card.findOneAndRemove({ _id: req.params.id, owner: req.user._id })
+        .then((found) => {
+          if (!found) {
+            return res.status(403).send({ message: 'Нет доступа к удалению чужой карточки' });
+          }
+          return res.send(found);
+        })
+        .catch((err) => res.status(500).send(err.message));
     })
-    .catch((err) => res.status(500).send(err));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send(err.message);
+      }
+      return res.status(404).send(err.message);
+    });
 };
 
 module.exports.likeCard = (req, res) => {
@@ -46,7 +61,12 @@ module.exports.likeCard = (req, res) => {
       }
       return res.send(found);
     })
-    .catch((err) => res.status(500).send(err));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send(err.message);
+      }
+      return res.status(404).send(err.message);
+    });
 };
 
 module.exports.dislikeCard = (req, res) => {
@@ -61,5 +81,10 @@ module.exports.dislikeCard = (req, res) => {
       }
       return res.send(found);
     })
-    .catch((err) => res.status(500).send(err));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send(err.message);
+      }
+      return res.status(404).send(err.message);
+    });
 };

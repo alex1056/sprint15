@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+require('dotenv').config();
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -8,7 +9,6 @@ module.exports.getUsers = (req, res) => {
       res.send({ data: users });
     })
     .catch((err) => {
-      console.log(err);
       res.status(400).send(err.message);
     });
 };
@@ -24,7 +24,10 @@ module.exports.getUserById = (req, res) => {
       return res.send(found);
     })
     .catch((err) => {
-      res.status(400).send(err.message);
+      if (err.name === 'CastError') {
+        res.status(400).send(err.message);
+      }
+      return res.status(404).send(err.message);
     });
 };
 
@@ -41,7 +44,8 @@ module.exports.updateUserProfile = (req, res) => {
       return res.send(found);
     })
     .catch((err) => {
-      res.status(400).send(err.message);
+      if (err.name === 'ValidationError') return res.status(400).send({ message: err.message });
+      return res.status(500).send({ message: err.message });
     });
 };
 
@@ -58,16 +62,24 @@ module.exports.updateUserAvatar = (req, res) => {
       return res.send(found);
     })
     .catch((err) => {
-      res.status(400).send(err.message);
+      if (err.name === 'ValidationError') return res.status(400).send({ message: err.message });
+      return res.status(500).send({ message: err.message });
     });
 };
 
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
+  if (email.length === 0) return res.status(400).send({ message: 'Поле "email" должно быть заполнено' });
+  if (password.length === 0) return res.status(400).send({ message: 'Поле "пароль" должно быть заполнено' });
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      const { NODE_ENV, JWT_SECRET } = process.env;
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'some-secret-key', { expiresIn: '7d' },
+      );
+
       res
         .cookie('jwt', token, {
           maxAge: 3600000 * 24 * 7,
@@ -86,8 +98,9 @@ module.exports.createUser = (req, res) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
+  if (password.length === 0) return res.status(400).send({ message: 'Поле "пароль" должно быть заполнено' });
 
-  bcrypt.hash(password, 10)
+  return bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
@@ -98,6 +111,7 @@ module.exports.createUser = (req, res) => {
       });
     })
     .catch((err) => {
-      res.status(400).send(err);
+      if (err.name === 'MongoError' && err.code === 11000) return res.status(409).send({ message: `Пользователь с email= ${email} уже существует` });
+      return res.status(400).send(err.name);
     });
 };

@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Поле должно содержать значение'],
   },
   avatar: {
-    type: 'String',
+    type: String,
     validate: {
       validator: (v) => validatorModule.isURL(v),
       message: (props) => `${props.value} некорректный формат ссылки!`,
