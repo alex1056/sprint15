@@ -6,8 +6,7 @@ module.exports.getCards = (req, res) => {
       res.send({ data: cards });
     })
     .catch((err) => {
-      console.log(err);
-      res.status(500).send({ message: 'Произошла ошибка' });
+      res.status(500).send({ message: err.message });
     });
 };
 
@@ -30,7 +29,7 @@ module.exports.deleteCard = (req, res) => {
   Card.findById(req.params.id)
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Карточка не найдена' });
+        return res.status(404).send({ message: `Карточка с ID=${req.params.id} не найдена` });
       }
       return Card.findOneAndRemove({ _id: req.params.id, owner: req.user._id })
         .then((found) => {
@@ -39,13 +38,13 @@ module.exports.deleteCard = (req, res) => {
           }
           return res.send(found);
         })
-        .catch((err) => res.status(500).send(err.message));
+        .catch((err) => res.status(500).send({ message: err.message }));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send(err.message);
+        return res.status(400).send({ message: `Передан некорректный ID карточки (${req.params.id})` });
       }
-      return res.status(404).send(err.message);
+      return res.status(500).send({ message: err.message });
     });
 };
 
@@ -57,15 +56,15 @@ module.exports.likeCard = (req, res) => {
   )
     .then((found) => {
       if (!found) {
-        return res.status(404).send({ message: `Карточка с id=${req.params.cardId} не найдена` });
+        return res.status(404).send({ message: `Карточка с ID=${req.params.cardId} не найдена` });
       }
       return res.send(found);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send(err.message);
+        return res.status(400).send({ message: `Передан некорректный ID карточки (${req.params.cardId})` });
       }
-      return res.status(404).send(err.message);
+      return res.status(500).send({ message: err.message });
     });
 };
 
@@ -77,14 +76,14 @@ module.exports.dislikeCard = (req, res) => {
   )
     .then((found) => {
       if (!found) {
-        return res.status(404).send({ message: `Карточка с id=${req.params.cardId} не найдена` });
+        return res.status(404).send({ message: `Карточка с ID=${req.params.cardId} не найдена` });
       }
       return res.send(found);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send(err.message);
+        return res.status(400).send({ message: `Передан некорректный ID карточки (${req.params.cardId})` });
       }
-      return res.status(404).send(err.message);
+      return res.status(500).send({ message: err.message });
     });
 };

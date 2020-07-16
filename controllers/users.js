@@ -9,7 +9,7 @@ module.exports.getUsers = (req, res) => {
       res.send({ data: users });
     })
     .catch((err) => {
-      res.status(400).send(err.message);
+      res.status(400).send({ message: err.message });
     });
 };
 
@@ -18,16 +18,16 @@ module.exports.getUserById = (req, res) => {
     .then((found) => {
       if (!found) {
         return res.status(404).send({
-          message: `Пользователь с id=${req.params.id} не найден`,
+          message: `Пользователь с ID=${req.params.id} не найден`,
         });
       }
       return res.send(found);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send(err.message);
+        return res.status(400).send({ message: `Передан некорректный ID=${req.params.id}` });
       }
-      return res.status(404).send(err.message);
+      return res.status(500).send({ message: err.message });
     });
 };
 
@@ -38,7 +38,7 @@ module.exports.updateUserProfile = (req, res) => {
     .then((found) => {
       if (!found) {
         return res.status(404).send({
-          message: `Пользователь с id=${req.params.id} не найден`,
+          message: `Пользователь с ID=${req.params.id} не найден`,
         });
       }
       return res.send(found);
@@ -56,7 +56,7 @@ module.exports.updateUserAvatar = (req, res) => {
     .then((found) => {
       if (!found) {
         return res.status(404).send({
-          message: `Пользователь с id=${req.params.id} не найден`,
+          message: `Пользователь с ID=${req.params.id} не найден`,
         });
       }
       return res.send(found);
@@ -69,8 +69,8 @@ module.exports.updateUserAvatar = (req, res) => {
 
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
-  if (email.length === 0) return res.status(400).send({ message: 'Поле "email" должно быть заполнено' });
-  if (password.length === 0) return res.status(400).send({ message: 'Поле "пароль" должно быть заполнено' });
+  if (!email) return res.status(400).send({ message: 'Поле "email" должно быть заполнено' });
+  if (!password) return res.status(400).send({ message: 'Поле "пароль" должно быть заполнено' });
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -98,7 +98,7 @@ module.exports.createUser = (req, res) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  if (password.length === 0) return res.status(400).send({ message: 'Поле "пароль" должно быть заполнено' });
+  if (!password) return res.status(400).send({ message: 'Поле "пароль" должно быть заполнено' });
 
   return bcrypt.hash(password, 10)
     .then((hash) => User.create({
@@ -111,7 +111,7 @@ module.exports.createUser = (req, res) => {
       });
     })
     .catch((err) => {
-      if (err.name === 'MongoError' && err.code === 11000) return res.status(409).send({ message: `Пользователь с email= ${email} уже существует` });
-      return res.status(400).send(err.name);
+      if (err.name === 'MongoError' && err.code === 11000) return res.status(409).send({ message: `Пользователь с email=${email} уже существует` });
+      return res.status(400).send({ message: err.message });
     });
 };
