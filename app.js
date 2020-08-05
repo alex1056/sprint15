@@ -21,13 +21,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: '5f0327ddbd97500a80f7b19b',
-//   };
-//   next();
-// });
-
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use('/', routerSignInUp);
@@ -35,15 +28,11 @@ app.use(auth);
 app.use('/', routerUsers);
 app.use('/', routerCards);
 app.use(routerErr);
-// app.use((err, req, res, next) => {
 app.use((err, req, res, next) => {
-  // если у ошибки нет статуса, выставляем 500
   const { statusCode = 500, message } = err;
-
   res
     .status(statusCode)
     .send({
-      // проверяем статус и выставляем сообщение в зависимости от него
       message: statusCode === 500
         ? 'На сервере произошла ошибка'
         : message,
