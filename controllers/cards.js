@@ -24,7 +24,7 @@ module.exports.createCard = (req, res, next) => {
     .then((newCard) => res.send({ data: newCard }))
     .catch((e) => {
       if (e.name === 'ValidationError') {
-        const err = new ValidationError('Ошибка валидации данных');
+        const err = new ValidationError(e.message);
         next(err);
       } else {
         next(e);

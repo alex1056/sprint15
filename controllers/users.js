@@ -100,10 +100,7 @@ module.exports.login = (req, res, next) => {
         })
         .end();
     })
-    .catch((err) => {
-      console.log('err=', err);
-      return next(err);
-    });
+    .catch((err) => next(err));
 };
 
 module.exports.createUser = (req, res, next) => {
