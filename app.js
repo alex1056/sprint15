@@ -6,6 +6,12 @@ require('dotenv').config();
 const app = express();
 const path = require('path');
 const mongoose = require('mongoose');
+
+// const joi = require('@hapi/joi');
+// const celebrate = require('celebrate');
+// const { celebrate, Joi } = require('celebrate');
+const { errors } = require('celebrate');
+
 const { auth } = require('./middlewares/auth');
 
 const routerUsers = require(path.join(__dirname, 'routes/router-users.js'));
@@ -28,6 +34,7 @@ app.use(auth);
 app.use('/', routerUsers);
 app.use('/', routerCards);
 app.use(routerErr);
+app.use(errors());
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
   res
