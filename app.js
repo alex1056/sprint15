@@ -20,6 +20,7 @@ const routerSignInUp = require(path.join(__dirname, 'routes/router-signin-signup
 
 const routerErr = require(path.join(__dirname, 'middlewares/router-err.js'));
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+
 const { PORT = 3000 } = process.env;
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
@@ -31,6 +32,11 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(requestLogger);
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
 app.use('/', routerSignInUp);
 app.use(auth);
 app.use('/', routerUsers);
