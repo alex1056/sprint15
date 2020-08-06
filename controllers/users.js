@@ -80,7 +80,7 @@ module.exports.login = (req, res, next) => {
     return next(err);
   }
   try {
-    if (!password) throw new ValidationError('Ошибка валидации данных, поле "пароль" должно быть заполнено');
+    if (!password.trim()) throw new ValidationError('Ошибка валидации данных, поле "пароль" должно быть заполнено');
   } catch (err) {
     return next(err);
   }
@@ -108,7 +108,7 @@ module.exports.createUser = (req, res, next) => {
     name, about, avatar, email, password,
   } = req.body;
   try {
-    if (!password) throw new ValidationError('Поле "пароль" должно быть заполнено');
+    if (!password.trim()) throw new ValidationError('Поле "пароль" должно быть заполнено');
   } catch (err) {
     return next(err);
   }

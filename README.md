@@ -4,6 +4,7 @@
 ## API Mesto и статические файлы выложены на удаленный сервер.
 
 ### Ссылка на сервер [https://mesto2020.ml/](https://mesto2020.ml/)
+### Ссылка на API [https://api.mesto2020.ml/](https://api.mesto2020.ml/)
 ### Публичный IP-адрес сервера: 84.201.171.240
 
 ## Installation:
