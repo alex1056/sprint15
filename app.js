@@ -7,11 +7,10 @@ const app = express();
 const path = require('path');
 const mongoose = require('mongoose');
 
-// const joi = require('@hapi/joi');
-// const celebrate = require('celebrate');
-// const { celebrate, Joi } = require('celebrate');
 const { errors } = require('celebrate');
 
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 const { auth } = require('./middlewares/auth');
 
 const routerUsers = require(path.join(__dirname, 'routes/router-users.js'));
@@ -19,6 +18,7 @@ const routerCards = require(path.join(__dirname, 'routes/router-cards.js'));
 const routerSignInUp = require(path.join(__dirname, 'routes/router-signin-signup.js'));
 
 const routerErr = require(path.join(__dirname, 'middlewares/router-err.js'));
+
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { PORT = 3000 } = process.env;
@@ -29,6 +29,13 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+});
+
+app.use(limiter);
+app.use(helmet());
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(requestLogger);
