@@ -3,9 +3,27 @@
 
 ## API Mesto и статические файлы выложены на удаленный сервер.
 
-### Ссылка на сервер [https://mesto2020.ml/](https://mesto2020.ml/)
-### Ссылка на API [https://api.mesto2020.ml/](https://api.mesto2020.ml/)
-### Публичный IP-адрес сервера: 84.201.171.240
+
+В API реализованы следующие запросы:
+
+> GET localhost:3000/users
+> GET localhost:3000/users/userId
+> POST localhost:3000/users/users
+> PATCH localhost:3000/users/me
+> PATCH localhost:3000/users/me/avatar
+> GET localhost:3000/cards
+> POST localhost:3000/cards
+> DELETE localhost:3000/cards/cardId
+> PUT localhost:3000/cards/cardId/likes
+> DELETE localhost:3000/cards/cardId/likes
+> Wrong URLs return status 404
+
+Следующие запросы не защищены авторизацией:
+
+> POST localhost:3000/signin
+> POST localhost:3000/signup
+
+
 
 ## Installation:
 
