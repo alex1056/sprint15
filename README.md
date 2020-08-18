@@ -6,7 +6,7 @@
 
 В API реализованы следующие запросы:
 
-> - GET localhost:3000/users
+> - GET localhost:3000/users
 > - GET localhost:3000/users/userId
 > - POST localhost:3000/users/users
 > - PATCH localhost:3000/users/me
