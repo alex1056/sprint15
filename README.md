@@ -1,10 +1,26 @@
+# Учебное задание "Спринт 15"
 
-# Спринт 15
+REST API приложение для работы фронтенда.
 
-## API Mesto и статические файлы выложены на удаленный сервер.
+**Технологии:**
 
+- JavaScript,
+- Express,
+- MongoBD,
+- Node.js,
+- Joi-Celebrate - валидация полей,
+- Winston - логирование запросов.
 
-В API реализованы следующие запросы:
+**Функциональность:**
+
+- signin,
+- signup,
+- сохранение карточки,
+- удаление карточки,
+- получение всех карточек пользователя,
+- изменение информации о пользователе.
+
+**В API реализованы следующие запросы:**
 
 > - GET localhost:3000/users
 > - GET localhost:3000/users/userId
@@ -23,10 +39,6 @@
 > - POST localhost:3000/signin
 > - POST localhost:3000/signup
 
-
-
-## Installation:
-
 ### Dependencies:
 
 `npm install`
@@ -38,4 +50,3 @@
 
 **Development:**
 `npm run dev`
-
